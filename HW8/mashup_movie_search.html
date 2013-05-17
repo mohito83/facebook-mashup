@@ -1,0 +1,223 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />    
+<title>Facebook IMDB Mashup</title>
+    <style type="text/css">
+    div .formdata {
+    position:relative;
+    top: 30%;
+    left: 34%;
+    text-align:left;
+    padding-left:1em; 
+    height: 100px;
+    width: 400px;
+    border:double;
+    }
+    </style>
+</head>
+
+<body>
+
+	<div id="fb-root"></div>
+	<script language="JavaScript" type="text/javascript">
+  	window.fbAsyncInit = function() {
+    	// init the FB JS SDK
+    	FB.init({
+      	appId      : '411963498870798', // App ID from the App Dashboard
+      	channelUrl : '//cs-server.usc.edu:10138/fbImdbMash/xd_receiver.htm', // Channel File for x-domain communication
+      	status     : true, // check the login status upon init?
+      	cookie     : true, // set sessions cookies to allow your server to access the session?
+      	xfbml      : true  // parse XFBML tags on this page?
+    	});
+
+	
+	};	
+
+
+	function login(row_result) {
+	
+    		FB.login(function(response) {
+        		if (response.authResponse) {
+            			testAPI(row_result);	
+        		} else {
+            			//alert("Login to facebook account has been failed please try again after some time");	
+        		}
+    		});
+	}
+	
+	function showFBDialog(row_result){
+		FB.getLoginStatus(function(response) {
+			if (response.status === 'connected') {
+        		testAPI(row_result);	
+    		} else if (response.status === 'not_authorized') {
+        		// not_authorized
+        		login(row_result);
+    		} else {
+        		// not_logged_in
+        		login(row_result);
+    		}
+		});
+	}
+
+	function testAPI(row_result) {
+		img = document.getElementById("imdbResults").rows[row_result+1].cells.item(0).innerHTML;
+		start = img.indexOf("http");
+		end = img.indexOf(">");
+		img = img.substring(start,end-1);
+		capt = "I am interested in this movie/series/game.";
+		descript = document.getElementById("imdbResults").rows[row_result+1].cells.item(1).innerHTML+" ("+document.getElementById("imdbResults").rows[row_result+1].cells.item(2).innerHTML+") has a rating of "+document.getElementById("imdbResults").rows[row_result+1].cells.item(4).innerHTML; 
+		title = document.getElementById("imdbResults").rows[row_result+1].cells.item(1).innerHTML;		
+		rlink =  document.getElementById("imdbResults").rows[row_result+1].cells.item(5).innerHTML;
+		start = rlink.indexOf("http");
+		end = rlink.indexOf(">");
+		rlink = rlink.substring(start,end-2);
+
+		var feedParam = {
+          	method: 'feed',
+          	link: rlink,	
+		name: title,
+         	caption: capt,
+		picture: img,	
+		description: descript,
+		properties: {"Look at user reviews":{text:"here",href:rlink+"/reviews"}} 
+		};
+
+        	function callback(response) {
+			 if (response && response.post_id) {
+     				 
+			 } else {
+      				//alert('Unable to publish the post. Please try again after sometime');
+    			}	
+		}
+
+        	FB.ui(feedParam, callback);
+	}
+
+  	// Load the SDK's source Asynchronously
+  	(function(d, debug){
+     	var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     	if (d.getElementById(id)) {return;}
+     	js = d.createElement('script'); js.id = id; js.async = true;
+     	js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
+     	ref.parentNode.insertBefore(js, ref);
+   	}(document, /*debug*/ false));
+	
+	function validateForm() {
+			//clear the div element structure
+			document.getElementById("results").innerHTML="";
+            var textValue = document.getElementsByName('Title')[0].value;
+            if (textValue == null || textValue == "") {
+            	alert("Please enter the Title.");
+                return false;
+            } else {
+            	performAJAXFetch();
+                //return false;
+            }
+        }
+       
+	var doc = null;
+ 
+        function performAJAXFetch(){
+	    	var title = document.getElementsByName('Title')[0].value;
+            var media = document.getElementsByName('mediaType')[0].value;
+            var urlStr = "http://cs-server.usc.edu:10138/fbImdbMash/fbImdbMash?Title="+title+"&mediaType="+media;
+            //alert(urlStr);
+            fetchIMDBRecords(urlStr);
+        }
+       
+	 var req = false; 
+        function fetchIMDBRecords(urlStr){
+						// branch for native XMLHttpRequest object
+						if (window.XMLHttpRequest) {
+							try {
+								req = new XMLHttpRequest();
+							} catch (e) {
+								req = false;
+							}
+							// branch for IE/Windows ActiveX version
+						} else if (window.ActiveXObject) {
+							try {
+								req = new ActiveXObject("Msxml2.XMLHTTP");
+							} catch (e) {
+								try {
+									req = new ActiveXObject("Microsoft.XMLHTTP");
+								} catch (e) {
+									req = false;
+								}
+							}
+						}
+						
+						if (req) {
+							req.onreadystatechange = callBackFunction;
+							req.open("GET", urlStr, true);
+							req.ontimeout = function() {
+								document.getElementById("results").innerHTML="<h3>Your request has been timed out!!<h3>";
+							}
+							req.timeout=10000;
+							req.send("");
+							
+						}
+		}
+        
+		function callBackFunction(){
+        	// only if req shows "loaded"
+        	if (req.readyState == 4) {
+        	// only if "OK"
+		if (req.status == 200) {
+			doc = eval("(" + req.responseText + ")");
+        	processJSON(doc);	
+		} else {
+        	document.getElementById("results").innerHTML=req.responseText;
+        	}
+        }
+		}
+       
+	function processJSON(obj){
+		display_txt = "<br/><h3>Displaying "+obj.results.result.length+" results for "+ document.getElementsByName('Title')[0].value+"</h3><br/><br/>";	
+
+		if(obj.results.result.length>0){
+		html_table="<table id=\"imdbResults\" border=\"double\" width=\"960px\" style=\"text-align:center;margin-left:auto;margin-right:auto\"><col width=\"20%\"/><col width=\"35%\"/><col width=\"10%\"/><col width=\"15%\"/><col width=\"5%\"/><col width=\"10%\"/><col width=\"10%\"/><tr><th>Image</th><th>Title</th><th>Year</th><th>Director</th><th>Rating</th><th>Details</th><th>Post To Facebook</th></tr>";
+		
+		for(i=0; i<obj.results.result.length; i++){
+			img_txt = "<img width=\"54\" height=\"74\" src=\""+obj.results.result[i].cover+"\">";	
+			var row = "<tr><td>"+img_txt+"</td><td>"+obj.results.result[i].title+"</td><td>"+obj.results.result[i].year+"</td><td>"+obj.results.result[i].director+"</td><td>"+obj.results.result[i].rating+"</td><td><a href="+obj.results.result[i].details+">Details</a></td><td><img width=\"96\" height=\"50\" src=\"images/facebook.jpg\" onClick=\"showFBDialog("+i+")\"></td></tr>";
+			html_table = html_table + row;
+		}
+		html_table=html_table+"</table>";
+		document.getElementById("results").innerHTML= display_txt+html_table;	
+		} else {
+			document.getElementById("results").innerHTML= display_txt;
+		}
+		
+	} 
+	
+	</script>
+
+
+	<div style="text-align:center">
+        <h1>Movie Search</h1>
+        <div class="formdata">
+            <br />
+			<form action="" method="GET">
+                <table>
+                    <tr><td>Title: </td><td><input type="text" name="Title" style="width:300px"/></td></tr>
+                    <tr><td>Media Type: </td><td><select name="mediaType" style="width:150px">
+                <option selected="selected">All Types</option>
+                <option>Feature Film</option>
+                <option>TV Series</option>
+                <option>Video Game</option>
+                        </select></td></tr>
+                    <tr><td colspan="2" align="center"><input type="submit" value="Search" onClick="validateForm(); return false;"></td></tr>
+                </table>
+			</form>
+            
+	</div>
+	
+	 <br/>
+        <div id="results">
+        </div>
+	
+	</div>
+    <NOSCRIPT>
+</body>
+</html>
