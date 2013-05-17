@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">IMDBFBMashup</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Logout Facebook</string>
+    <string name="main_page_title">Movie Search</string>
+    <string name="search_movie_title">Search the movie title</string>
+    <string name="search_button_title">Search</string>
+    <string name="result_default_title">No results found</string>
+    <string name="main_dialog_title">Details</string>
+    <string name="main_dialog_question">Would you like to post the movie information on Facebook?</string>
+    <string name="main_dialog_button_title">Post to Facebook</string>
+
+    <string-array name="media_type_title">
+        <item>All Type</item>
+        <item>Feature Film</item>
+        <item>TV Series</item>
+        <item>Video Game</item>
+    </string-array>
+
+    <string name="title_activity_display_result_acitvity">IMDBFBMashup</string>
+    <string name="title_activity_facebook">IMDBFBMashup</string>
+
+</resources>

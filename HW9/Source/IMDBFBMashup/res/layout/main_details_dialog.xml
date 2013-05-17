@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/main_dialog_title"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/coverImage"
+        android:layout_width="54dp"
+        android:layout_height="74dp"
+        android:paddingTop="5dp" 
+        android:layout_margin="5dp" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/year"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
+     <TextView
+         android:id="@+id/director"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_margin="5dp"
+         android:textAppearance="?android:attr/textAppearanceSmall" />
+     
+      <TextView
+          android:id="@+id/rating"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="5dp"
+          android:textAppearance="?android:attr/textAppearanceSmall" />
+      
+       <TextView
+           android:id="@+id/postToFbQeustion"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/main_dialog_question"
+           android:layout_margin="5dp"
+           android:paddingTop="10dp"
+           android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <Button
+        android:id="@+id/postToFbButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_dialog_button_title" />
+
+</LinearLayout>
